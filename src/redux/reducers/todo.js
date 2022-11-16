@@ -17,7 +17,8 @@ export default function (state = initialState, action) {
                 id: Date.now(),
                 job: newTodo.job,
                 date: newTodo.date,
-                complete: false
+                complete: false,
+                priority: newTodo.priority
             });
             return {
                 todoList: [...newTodoList]

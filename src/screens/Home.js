@@ -13,7 +13,7 @@ import {
     Keyboard
 } from "react-native";
 import { FONTS, images, SIZES, COLORS, dummys } from "../constants";
-import { Fontisto, Ionicons } from '@expo/vector-icons';
+import { Fontisto, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Swipeable } from "react-native-gesture-handler";
 import DateTimePicker from '@react-native-community/datetimepicker';
 /* redux */
@@ -26,11 +26,11 @@ const Home = ({ navigation }) => {
     const TodoList = useSelector((state) => state.todo.todoList);
 
     const [newTodo, setNewTodo] = React.useState('');
-    const [color, setColor] = React.useState(COLORS.blue);
+    const [color, setColor] = React.useState("pink");
     const [show, setShow] = React.useState(false);
     const [date, setDate] = React.useState(new Date());
 
-    const colors = [COLORS.bubble, COLORS.blue, COLORS.green, COLORS.orange, COLORS.pink];
+    const colors = ["pink", "orange", "bubble", "blue", "green"];
 
     console.log(TodoList);
 
@@ -44,7 +44,8 @@ const Home = ({ navigation }) => {
         if (newTodo !== "") {
             actions.addTodo({
                 job: newTodo,
-                date: formatDate(new Date())
+                date: formatDate(new Date()),
+                priority: color
             });
             setNewTodo("");
         }
@@ -109,7 +110,7 @@ const Home = ({ navigation }) => {
                     <TouchableOpacity
                         style={{
                             flexDirection: "row",
-                            backgroundColor: color,
+                            backgroundColor: COLORS[item.priority],
                             marginBottom: SIZES.base * 2,
                             padding: SIZES.base * 2,
                             borderRadius: SIZES.radius,
@@ -137,7 +138,7 @@ const Home = ({ navigation }) => {
         return (
             <View
                 style={{
-                    height: SIZES.height * 0.3,
+                    flex: 0.4,
                     paddingHorizontal: SIZES.padding
                 }}
             >
@@ -146,7 +147,8 @@ const Home = ({ navigation }) => {
                     resizeMode="cover"
                     style={{
                         height: '100%',
-                        width: '100%'
+                        width: '100%',
+                        opacity: 0.5
                     }}
                 />
 
@@ -160,6 +162,8 @@ const Home = ({ navigation }) => {
             <View
                 style={{
                     padding: SIZES.padding,
+                    flex: 0.6,
+                    marginTop: -SIZES.height * 0.35
                 }}
             >
                 <View
@@ -178,7 +182,7 @@ const Home = ({ navigation }) => {
                             alignItems: "center"
                         }}
                     >
-                        <Text style={{ ...FONTS.h3_light }}>{formatDate(date)}</Text>
+                        <Text style={{ ...FONTS.h3 }}>{formatDate(date)}</Text>
                         <TouchableOpacity
                             style={{
                                 height: 50,
@@ -213,7 +217,7 @@ const Home = ({ navigation }) => {
                             fontSize: 16,
                             borderRadius: 60,
                             backgroundColor: COLORS.white,
-                            borderColor: '#C0C0C0'
+                            borderColor: COLORS.black
                         }}
 
                         value={newTodo}
@@ -251,12 +255,14 @@ const Home = ({ navigation }) => {
                                     style={{
                                         height: value === color ? 60 : 50,
                                         width: value === color ? 60 : 50,
-                                        backgroundColor: value,
-                                        borderRadius: SIZES.radius
+                                        backgroundColor: COLORS[value],
+                                        borderRadius: SIZES.radius,
+                                        justifyContent: "center",
+                                        alignItems: "center"
                                     }}
                                     onPress={() => setColor(value)}
                                 >
-
+                                    <MaterialIcons name="priority-high" size={35 - (index * 4)} color={COLORS.white} />
                                 </TouchableOpacity>
                             )
                         })

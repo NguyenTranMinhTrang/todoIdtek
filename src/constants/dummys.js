@@ -3,25 +3,29 @@ const TODO = [
         id: 1,
         job: "Do Homework",
         date: '15/11/2022',
-        complete: true
+        complete: true,
+        priority: "pink"
     },
     {
         id: 2,
         job: "Clean House",
         date: '15/11/2022',
-        complete: false
+        complete: false,
+        priority: "blue"
     },
     {
         id: 3,
         job: "Play Sport",
         date: '16/11/2022',
-        complete: false
+        complete: false,
+        priority: "orange"
     },
     {
         id: 4,
         job: "Wash Dishes",
         date: '16/11/2022',
-        complete: false
+        complete: false,
+        priority: "green"
     },
 
 ]
