@@ -1,11 +1,11 @@
 import React from "react";
-import { View, Text, SafeAreaView, TextInput, TouchableOpacity, Switch, Modal, Pressable, Keyboard } from "react-native";
+import { View, Text, Alert, TextInput, TouchableOpacity, Switch, Modal, Pressable, Keyboard } from "react-native";
 import { SIZES, COLORS, FONTS } from "../constants";
 import { AntDesign, Fontisto, MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 /* redux */
 import actions from "../redux/actions";
-import { useSelector } from "react-redux";
+import { formatDate } from "../helpers";
 
 
 const Detail = ({ navigation, route }) => {
@@ -13,8 +13,7 @@ const Detail = ({ navigation, route }) => {
     const [todo, setTodo] = React.useState(null);
     const [show, setShow] = React.useState(false);
     const [date, setDate] = React.useState(new Date());
-
-    console.log(todo);
+    const now = new Date();
 
     React.useEffect(() => {
         setTodo(route.params.item);
@@ -32,13 +31,13 @@ const Detail = ({ navigation, route }) => {
     }
 
     const updateTodo = () => {
-        console.log(todo);
-        actions.updateTodo(todo);
-    }
-
-    const formatDate = (date) => {
-        let tempDate = new Date(date);
-        return tempDate.getDate() + "/" + (tempDate.getMonth() + 1) + "/" + tempDate.getFullYear();
+        if (todo.job !== "") {
+            actions.updateTodo(todo);
+            actions.checkChangeDate(formatDate(route.params.initialDate));
+        }
+        else {
+            Alert.alert("Job is empty !");
+        }
     }
 
     const onChange = (event, selectedDate) => {
@@ -214,6 +213,7 @@ const Detail = ({ navigation, route }) => {
                         ios_backgroundColor={COLORS.white}
                         onValueChange={toggleSwitch}
                         value={todo?.complete}
+                        disabled={route.params.initialDate < now ? true : false}
                     />
                 </View>
 

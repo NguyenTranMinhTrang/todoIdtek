@@ -1,34 +1,15 @@
-const TODO = [
-    {
-        id: 1,
-        job: "Do Homework",
-        date: '15/11/2022',
-        complete: true,
-        priority: "pink"
-    },
-    {
-        id: 2,
-        job: "Clean House",
-        date: '15/11/2022',
-        complete: false,
-        priority: "blue"
-    },
-    {
-        id: 3,
-        job: "Play Sport",
-        date: '16/11/2022',
-        complete: false,
-        priority: "orange"
-    },
-    {
-        id: 4,
-        job: "Wash Dishes",
-        date: '16/11/2022',
-        complete: false,
-        priority: "green"
-    },
+const TODO = [];
 
-]
+
+for (var i = 0; i < 1000; i++) {
+    TODO.push({
+        id: i,
+        job: `Do homework ${i}`,
+        date: `16/11/2022`,
+        complete: false,
+        priority: "pink"
+    });
+}
 
 export default {
     TODO

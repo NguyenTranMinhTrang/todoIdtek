@@ -23,3 +23,10 @@ export const deleteTodo = (id) => {
         payload: id
     })
 }
+
+export const checkChangeDate = (date) => {
+    dispatch({
+        type: types.CHECK_CHANGE,
+        payload: date
+    })
+}
