@@ -5,7 +5,7 @@ for (var i = 0; i < 1000; i++) {
     TODO.push({
         id: i,
         job: `Do homework ${i}`,
-        date: `16/11/2022`,
+        date: new Date(),
         complete: false,
         priority: "pink"
     });

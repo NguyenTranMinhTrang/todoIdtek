@@ -30,3 +30,10 @@ export const checkChangeDate = (date) => {
         payload: date
     })
 }
+
+export const getListFilter = (start, end) => {
+    dispatch({
+        type: types.FILTER_LIST,
+        payload: { start, end }
+    })
+}

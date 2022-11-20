@@ -14,9 +14,10 @@ import {
     StatusBar
 } from "react-native";
 import { FONTS, images, SIZES, COLORS, dummys } from "../constants";
-import { Fontisto, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Fontisto, Ionicons, MaterialIcons, AntDesign } from '@expo/vector-icons';
 import Animation from "../components/Animation";
 import DatePicker from "../components/DatePicker";
+import FilterModal from "../components/FilterModal";
 /* redux */
 import actions from "../redux/actions";
 import { useSelector } from "react-redux";
@@ -24,20 +25,18 @@ import { formatDate } from "../helpers";
 
 
 const Home = ({ navigation }) => {
-
-    const TodoList = useSelector((state) => state.todo.todoList);
     const Filter = useSelector((state) => state.todo.filter);
+    const state = useSelector((state) => state.todo.state);
 
     const [newTodo, setNewTodo] = React.useState('');
     const [color, setColor] = React.useState("pink");
     const [show, setShow] = React.useState(false);
+    const [modalFilter, setModalFilter] = React.useState(false);
     const [chooseDate, setChooseDate] = React.useState(new Date());
-
     const colors = ["pink", "orange", "bubble", "blue", "green"];
 
-
     React.useEffect(() => {
-        actions.checkChangeDate(formatDate(chooseDate));
+        actions.checkChangeDate(chooseDate);
     }, []);
 
     const addNewTodo = () => {
@@ -45,17 +44,17 @@ const Home = ({ navigation }) => {
         if (newTodo !== "") {
             actions.addTodo({
                 job: newTodo,
-                date: formatDate(chooseDate),
+                date: chooseDate,
                 priority: color
             });
-            actions.checkChangeDate(formatDate(chooseDate));
+            actions.checkChangeDate(chooseDate);
             setNewTodo("");
         }
     }
 
     const deleteTodo = (id) => {
         actions.deleteTodo(id);
-        actions.checkChangeDate(formatDate(chooseDate));
+        actions.checkChangeDate(chooseDate);
     }
 
     const onSelectItem = (item) => {
@@ -69,14 +68,9 @@ const Home = ({ navigation }) => {
 
 
     function renderItem({ item }) {
-        if (item.date == formatDate(chooseDate)) {
-            return (
-                <Animation key={`${item.id}`} item={item} onSelectItem={onSelectItem} deleteTodo={deleteTodo} />
-            )
-        }
-        else {
-            return <></>
-        }
+        return (
+            <Animation key={`${item.id}`} item={item} onSelectItem={onSelectItem} deleteTodo={deleteTodo} />
+        )
     }
 
 
@@ -85,7 +79,7 @@ const Home = ({ navigation }) => {
         return (
             <View
                 style={{
-                    flex: 0.4,
+                    flex: 0.3,
                     paddingHorizontal: SIZES.padding
                 }}
             >
@@ -109,10 +103,39 @@ const Home = ({ navigation }) => {
             <View
                 style={{
                     padding: SIZES.padding,
-                    flex: 0.6,
-                    marginTop: -SIZES.height * 0.35
+                    flex: 0.7,
+                    marginTop: -SIZES.height * 0.3
                 }}
             >
+                <View
+                    style={{
+                        flexDirection: "row",
+                        marginBottom: SIZES.padding,
+                        alignItems: "center",
+                    }}
+                >
+                    <TouchableOpacity
+                        style={{
+                            height: 50,
+                            width: 50,
+                            backgroundColor: COLORS.blue,
+                            justifyContent: "center",
+                            alignItems: "center",
+                            borderRadius: SIZES.radius,
+                            marginRight: SIZES.base
+
+                        }}
+
+                        onPress={() => setModalFilter(!modalFilter)}
+                    >
+                        <AntDesign name="filter" size={24} color={COLORS.white} />
+                    </TouchableOpacity>
+                    {
+                        !state.single &&
+                        <Text style={{ ...FONTS.h3 }}>{state.date}</Text>
+                    }
+
+                </View>
                 <View
                     style={{
                         flexDirection: "row",
@@ -129,7 +152,10 @@ const Home = ({ navigation }) => {
                             alignItems: "center"
                         }}
                     >
-                        <Text style={{ ...FONTS.h3 }}>{formatDate(chooseDate)}</Text>
+                        {
+                            state.single &&
+                            <Text style={{ ...FONTS.h3 }}>{state.date}</Text>
+                        }
                         <TouchableOpacity
                             style={{
                                 height: 50,
@@ -219,10 +245,11 @@ const Home = ({ navigation }) => {
                 <FlatList
                     data={Filter}
                     keyExtractor={item => `${item.id}`}
+                    showsVerticalScrollIndicator={false}
                     renderItem={renderItem}
                     contentContainerStyle={{ paddingTop: SIZES.padding }}
-                    initialNumToRender={10}
-                    windowSize={2}
+                    initialNumToRender={4}
+                    windowSize={3}
                 />
 
             </View>
@@ -236,7 +263,8 @@ const Home = ({ navigation }) => {
             />
             {renderHeader()}
             {renderContent()}
-            <DatePicker show={show} setShow={setShow} setChooseDate={setChooseDate} />
+            <DatePicker show={show} setShow={setShow} setChooseDate={setChooseDate} check={true} />
+            <FilterModal modalFilter={modalFilter} setModalFilter={setModalFilter} />
         </Pressable>
     )
 }

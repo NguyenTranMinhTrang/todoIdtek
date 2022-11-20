@@ -4,15 +4,13 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { SIZES, COLORS, FONTS } from "../constants";
 import { BlurView } from 'expo-blur';
 import actions from "../redux/actions";
-import { formatDate } from "../helpers";
 
 
-const DatePicker = ({ show, setShow, setChooseDate }) => {
+const DatePicker = ({ show, setShow, setChooseDate, check, start, end, setStart, setEnd }) => {
 
     const [date, setDate] = React.useState(new Date());
 
     const onChange = (event, selectedDate) => {
-        console.log("onchange");
         setShow(Platform.OS === 'ios');
         const currentDate = selectedDate || date;
         setDate(currentDate);
@@ -75,7 +73,9 @@ const DatePicker = ({ show, setShow, setChooseDate }) => {
                                     onPress={() => {
                                         setShow(false);
                                         setChooseDate(date);
-                                        actions.checkChangeDate(formatDate(date));
+                                        if (check) {
+                                            actions.checkChangeDate(date);
+                                        }
                                     }}
                                 >
                                     <Text style={{ ...FONTS.h3 }}>Ok</Text>

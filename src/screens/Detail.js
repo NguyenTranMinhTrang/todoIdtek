@@ -7,19 +7,21 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import actions from "../redux/actions";
 import { formatDate } from "../helpers";
 
+const today = new Date();
+const now = new Date();
+now.setDate(today.getDate() - 1);
+
 
 const Detail = ({ navigation, route }) => {
 
     const [todo, setTodo] = React.useState(null);
     const [show, setShow] = React.useState(false);
     const [date, setDate] = React.useState(new Date());
-    const now = new Date();
+
 
     React.useEffect(() => {
         setTodo(route.params.item);
-        const stringDate = route.params.item.date;
-        var dateParts = stringDate.split("/");
-        setDate(new Date(dateParts[2], dateParts[1] - 1, dateParts[0]))
+        setDate(route.params.item.date);
     }, []);
 
     const updateState = (key, value) => {
@@ -33,7 +35,7 @@ const Detail = ({ navigation, route }) => {
     const updateTodo = () => {
         if (todo.job !== "") {
             actions.updateTodo(todo);
-            actions.checkChangeDate(formatDate(route.params.initialDate));
+            actions.checkChangeDate(route.params.initialDate);
         }
         else {
             Alert.alert("Job is empty !");
@@ -44,7 +46,7 @@ const Detail = ({ navigation, route }) => {
         setShow(Platform.OS === 'ios');
         const currentDate = selectedDate || date;
         setDate(currentDate);
-        updateState("date", formatDate(currentDate));
+        updateState("date", currentDate);
 
     }
 
@@ -148,7 +150,7 @@ const Detail = ({ navigation, route }) => {
                             justifyContent: "space-between"
                         }}
                     >
-                        <Text style={{ ...FONTS.h3, color: COLORS.white }}>{todo?.date}</Text>
+                        <Text style={{ ...FONTS.h3, color: COLORS.white }}>{formatDate(todo?.date)}</Text>
 
                         <TouchableOpacity
                             style={{
@@ -213,7 +215,7 @@ const Detail = ({ navigation, route }) => {
                         ios_backgroundColor={COLORS.white}
                         onValueChange={toggleSwitch}
                         value={todo?.complete}
-                        disabled={route.params.initialDate < now ? true : false}
+                        disabled={date < now ? true : false}
                     />
                 </View>
 
