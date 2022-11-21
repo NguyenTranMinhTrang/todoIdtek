@@ -6,8 +6,6 @@ import {
     TouchableOpacity,
     TextInput,
     FlatList,
-    Modal,
-    Animated,
     Image,
     Pressable,
     Keyboard,

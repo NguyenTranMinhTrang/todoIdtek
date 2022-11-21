@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Alert, TextInput, TouchableOpacity, Switch, Modal, Pressable, Keyboard } from "react-native";
+import { LogBox, View, Text, Alert, TextInput, TouchableOpacity, Switch, ActivityIndicator, Pressable, Keyboard } from "react-native";
 import { SIZES, COLORS, FONTS } from "../constants";
 import { AntDesign, Fontisto } from '@expo/vector-icons';
 import DatePicker from "../components/DatePicker";
@@ -9,18 +9,18 @@ import actions from "../redux/actions";
 import { formatDate } from "../helpers";
 
 const today = new Date();
+LogBox.ignoreLogs(['Non-serializable']);
 
 const Detail = ({ navigation, route }) => {
 
     const state = useSelector((state) => state.todo.state);
+    const loading = useSelector((state) => state.todo.loading);
 
     const [todo, setTodo] = React.useState(null);
     const [show, setShow] = React.useState(false);
-    const [date, setDate] = React.useState(new Date());
 
     React.useEffect(() => {
         setTodo(route.params.item);
-        setDate(route.params.item.date);
     }, []);
 
     const updateState = (key, value) => {
@@ -33,32 +33,25 @@ const Detail = ({ navigation, route }) => {
 
     const updateTodo = () => {
         if (todo.job !== "") {
-            actions.updateTodo(todo);
-            if (state.single) {
-                actions.checkChangeDate(state.date);
-            }
-            else {
-                actions.getListFilter(state.date.start, state.date.end);
-            }
+            actions.updateTodo(todo)
+                .then((result) => {
+                    Alert.alert(result);
+                    if (state.single) {
+                        actions.checkChangeDate(state.date);
+                    }
+                    else {
+                        actions.getListFilter(state.date.start, state.date.end);
+                    }
+                })
         }
         else {
             Alert.alert("Job is empty !");
         }
     }
 
-    const onChange = (event, selectedDate) => {
-        setShow(Platform.OS === 'ios');
-        const currentDate = selectedDate || date;
-        setDate(currentDate);
-        updateState("date", currentDate);
-
-    }
-
     const toggleSwitch = () => updateState("complete", !todo.complete);
 
     const checkEnable = () => {
-        console.log("Today : ", formatDate(today));
-        console.log("To do day: ", formatDate(todo?.date));
         if (todo?.date.getFullYear() <= today.getFullYear() && todo?.date.getMonth() <= today.getMonth()
             && todo?.date.getDate() < today.getDate()
         ) {
@@ -224,7 +217,12 @@ const Detail = ({ navigation, route }) => {
 
                         onPress={() => updateTodo()}
                     >
-                        <Text style={{ ...FONTS.h3, color: COLORS.white }}>Update</Text>
+                        {
+                            loading ?
+                                <ActivityIndicator size="large" color={COLORS.white} />
+                                :
+                                <Text style={{ ...FONTS.h3, color: COLORS.white }}>Update</Text>
+                        }
                     </TouchableOpacity>
                 </View>
             </View>

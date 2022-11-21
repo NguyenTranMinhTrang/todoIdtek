@@ -28,27 +28,13 @@ export default function (state = initialState, action) {
                 filter: [...state.filter]
             }
 
-        /* case types.UPDATE_TODO:
-            const newUpdateTodo = action.payload;
-            const index = newTodoList.findIndex((todo => todo.id == newUpdateTodo.id));
-            newTodoList[index].job = newUpdateTodo.job;
-            newTodoList[index].date = newUpdateTodo.date;
-            newTodoList[index].complete = newUpdateTodo.complete;
-            return {
-                todoList: [...newTodoList],
-                filter: [...state.filter]
-            } */
-
         case types.UPDATE_TODO_BEGIN:
-            console.log("update begin");
             return {
                 ...state,
                 loading: true
             }
 
         case types.UPDATE_TODO_SUCCESS:
-            console.log("update success");
-            console.log("Reducer : ", state.loading);
             return {
                 ...state,
                 loading: false,

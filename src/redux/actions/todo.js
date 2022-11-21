@@ -27,14 +27,17 @@ export const updateTodoFailure = (error) => ({
 
 export const updateTodo = (newUpdateTodo) => {
     dispatch(updateTodoBegin());
-    const todoList = [...getState().todo.todoList];
-    const index = todoList.findIndex((todo => todo.id == newUpdateTodo.id));
-    todoList[index].job = newUpdateTodo.job;
-    todoList[index].date = newUpdateTodo.date;
-    todoList[index].complete = newUpdateTodo.complete;
-    dispatch(updateTodoSucess([...todoList]));
-
-
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            const todoList = [...getState().todo.todoList];
+            const index = todoList.findIndex((todo => todo.id == newUpdateTodo.id));
+            todoList[index].job = newUpdateTodo.job;
+            todoList[index].date = newUpdateTodo.date;
+            todoList[index].complete = newUpdateTodo.complete;
+            dispatch(updateTodoSucess([...todoList]));
+            resolve("Update success !");
+        }, 1000);
+    })
 }
 
 export const deleteTodo = (id) => {

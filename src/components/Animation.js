@@ -8,8 +8,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 const Animation = ({ item, deleteTodo, onSelectItem }) => {
 
-    console.log("rerender: ", item.id);
-
     const rightAction = (dragX, item) => {
         const scale = dragX.interpolate({
             inputRange: [-100, 0],
