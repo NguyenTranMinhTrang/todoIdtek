@@ -6,7 +6,7 @@ import { BlurView } from 'expo-blur';
 import actions from "../redux/actions";
 
 
-const DatePicker = ({ show, setShow, setChooseDate, check, start, end, setStart, setEnd }) => {
+const DatePicker = ({ show, setShow, setChooseDate, check }) => {
 
     const [date, setDate] = React.useState(new Date());
 

@@ -1,11 +1,11 @@
 import types from "../types";
 import dummys from "../../constants/dummys";
-import { formatDate } from "../../helpers";
 
 const initialState = {
     todoList: dummys.TODO,
     filter: [],
-    state: { single: true, date: "" }
+    state: { single: true, date: "" },
+    loading: false
 }
 
 export default function (state = initialState, action) {
@@ -14,7 +14,6 @@ export default function (state = initialState, action) {
     switch (action.type) {
         case types.ADD_TODO:
             const newTodo = action.payload;
-            console.log("list : ", newTodoList);
 
             newTodoList.push({
                 id: Date.now(),
@@ -24,11 +23,12 @@ export default function (state = initialState, action) {
                 priority: newTodo.priority
             });
             return {
+                ...state,
                 todoList: [...newTodoList],
                 filter: [...state.filter]
             }
 
-        case types.UPDATE_TODO:
+        /* case types.UPDATE_TODO:
             const newUpdateTodo = action.payload;
             const index = newTodoList.findIndex((todo => todo.id == newUpdateTodo.id));
             newTodoList[index].job = newUpdateTodo.job;
@@ -37,6 +37,22 @@ export default function (state = initialState, action) {
             return {
                 todoList: [...newTodoList],
                 filter: [...state.filter]
+            } */
+
+        case types.UPDATE_TODO_BEGIN:
+            console.log("update begin");
+            return {
+                ...state,
+                loading: true
+            }
+
+        case types.UPDATE_TODO_SUCCESS:
+            console.log("update success");
+            console.log("Reducer : ", state.loading);
+            return {
+                ...state,
+                loading: false,
+                todoList: action.payload
             }
 
         case types.REMOVE_TODO:
@@ -46,6 +62,7 @@ export default function (state = initialState, action) {
                 newTodoList.splice(indexDelete, 1);
             }
             return {
+                ...state,
                 todoList: [...newTodoList],
                 filter: [...state.filter]
             }
@@ -62,9 +79,10 @@ export default function (state = initialState, action) {
             });
 
             return {
+                ...state,
                 filter: [...newFilter],
                 todoList: [...state.todoList],
-                state: { single: true, date: formatDate(date) }
+                state: { single: true, date: date }
             }
 
         case types.FILTER_LIST:
@@ -85,9 +103,10 @@ export default function (state = initialState, action) {
             });
 
             return {
+                ...state,
                 filter: [...filterList],
                 todoList: [...state.todoList],
-                state: { single: false, date: `${formatDate(start)} - ${formatDate(end)}` }
+                state: { single: false, date: { start, end } }
             }
 
         default:

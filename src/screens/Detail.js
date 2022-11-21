@@ -1,23 +1,22 @@
 import React from "react";
 import { View, Text, Alert, TextInput, TouchableOpacity, Switch, Modal, Pressable, Keyboard } from "react-native";
 import { SIZES, COLORS, FONTS } from "../constants";
-import { AntDesign, Fontisto, MaterialIcons } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { AntDesign, Fontisto } from '@expo/vector-icons';
+import DatePicker from "../components/DatePicker";
 /* redux */
+import { useSelector } from "react-redux";
 import actions from "../redux/actions";
 import { formatDate } from "../helpers";
 
 const today = new Date();
-const now = new Date();
-now.setDate(today.getDate() - 1);
-
 
 const Detail = ({ navigation, route }) => {
+
+    const state = useSelector((state) => state.todo.state);
 
     const [todo, setTodo] = React.useState(null);
     const [show, setShow] = React.useState(false);
     const [date, setDate] = React.useState(new Date());
-
 
     React.useEffect(() => {
         setTodo(route.params.item);
@@ -35,7 +34,12 @@ const Detail = ({ navigation, route }) => {
     const updateTodo = () => {
         if (todo.job !== "") {
             actions.updateTodo(todo);
-            actions.checkChangeDate(route.params.initialDate);
+            if (state.single) {
+                actions.checkChangeDate(state.date);
+            }
+            else {
+                actions.getListFilter(state.date.start, state.date.end);
+            }
         }
         else {
             Alert.alert("Job is empty !");
@@ -51,6 +55,19 @@ const Detail = ({ navigation, route }) => {
     }
 
     const toggleSwitch = () => updateState("complete", !todo.complete);
+
+    const checkEnable = () => {
+        console.log("Today : ", formatDate(today));
+        console.log("To do day: ", formatDate(todo?.date));
+        if (todo?.date.getFullYear() <= today.getFullYear() && todo?.date.getMonth() <= today.getMonth()
+            && todo?.date.getDate() < today.getDate()
+        ) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 
     const renderHeader = () => {
         return (
@@ -171,36 +188,6 @@ const Detail = ({ navigation, route }) => {
 
                 </View>
 
-                <Modal
-                    animationType="slide"
-                    transparent={true}
-                    visible={show}
-                    onRequestClose={() => setShow(false)}
-                >
-                    <Pressable
-                        style={{
-                            flex: 1,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            paddingHorizontal: SIZES.padding
-                        }}
-                        onPress={() => setShow(false)}
-                    >
-                        {
-                            show && <DateTimePicker
-                                testID="dateTimePicker"
-                                value={date}
-                                mode='date'
-                                display="spinner"
-                                is24Hour={true}
-                                onChange={onChange}
-                                themeVariant="light"
-                                style={{ width: '100%', backgroundColor: COLORS.white, height: 500 }}
-                            />
-                        }
-                    </Pressable>
-                </Modal>
-
                 <View
                     style={{
                         flexDirection: "row",
@@ -215,7 +202,7 @@ const Detail = ({ navigation, route }) => {
                         ios_backgroundColor={COLORS.white}
                         onValueChange={toggleSwitch}
                         value={todo?.complete}
-                        disabled={date < now ? true : false}
+                        disabled={checkEnable()}
                     />
                 </View>
 
@@ -249,6 +236,7 @@ const Detail = ({ navigation, route }) => {
             style={{ flex: 1, backgroundColor: COLORS.white }}
             onPress={() => Keyboard.dismiss()}
         >
+            <DatePicker show={show} setShow={setShow} setChooseDate={(date) => updateState("date", date)} check={false} />
             {renderHeader()}
             {renderContent()}
         </Pressable>

@@ -1,7 +1,7 @@
 import store from "../store";
 import types from "../types";
 
-const { dispatch } = store;
+const { dispatch, getState } = store;
 
 export const addTodo = (todo) => {
     dispatch({
@@ -10,11 +10,31 @@ export const addTodo = (todo) => {
     })
 }
 
-export const updateTodo = (todo) => {
-    dispatch({
-        type: types.UPDATE_TODO,
-        payload: todo
-    })
+export const updateTodoBegin = () => ({
+    type: types.UPDATE_TODO_BEGIN
+});
+
+
+export const updateTodoSucess = (updateListTodo) => ({
+    type: types.UPDATE_TODO_SUCCESS,
+    payload: updateListTodo
+});
+
+export const updateTodoFailure = (error) => ({
+    type: types.UPDATE_TODO_FAILURE,
+    payload: error
+})
+
+export const updateTodo = (newUpdateTodo) => {
+    dispatch(updateTodoBegin());
+    const todoList = [...getState().todo.todoList];
+    const index = todoList.findIndex((todo => todo.id == newUpdateTodo.id));
+    todoList[index].job = newUpdateTodo.job;
+    todoList[index].date = newUpdateTodo.date;
+    todoList[index].complete = newUpdateTodo.complete;
+    dispatch(updateTodoSucess([...todoList]));
+
+
 }
 
 export const deleteTodo = (id) => {

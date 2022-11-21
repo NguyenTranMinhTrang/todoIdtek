@@ -59,8 +59,7 @@ const Home = ({ navigation }) => {
 
     const onSelectItem = (item) => {
         navigation.navigate("Detail", {
-            item,
-            initialDate: chooseDate
+            item
         });
     }
 
@@ -132,7 +131,7 @@ const Home = ({ navigation }) => {
                     </TouchableOpacity>
                     {
                         !state.single &&
-                        <Text style={{ ...FONTS.h3 }}>{state.date}</Text>
+                        <Text style={{ ...FONTS.h3 }}>{formatDate(state.date.start)} - {formatDate(state.date.end)}</Text>
                     }
 
                 </View>
@@ -154,7 +153,7 @@ const Home = ({ navigation }) => {
                     >
                         {
                             state.single &&
-                            <Text style={{ ...FONTS.h3 }}>{state.date}</Text>
+                            <Text style={{ ...FONTS.h3 }}>{formatDate(state.date)}</Text>
                         }
                         <TouchableOpacity
                             style={{
