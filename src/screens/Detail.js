@@ -4,7 +4,8 @@ import { SIZES, COLORS, FONTS } from "../constants";
 import { AntDesign, Fontisto } from '@expo/vector-icons';
 import DatePicker from "../components/DatePicker";
 import * as yup from 'yup';
-import { Formik } from "formik";
+import { Formik, Field, FastField } from "formik";
+import InputField from "../components/InputField";
 /* redux */
 import { useSelector } from "react-redux";
 import actions from "../redux/actions";
@@ -20,10 +21,6 @@ const Detail = ({ navigation, route }) => {
     const [show, setShow] = React.useState(false);
     const [date, setDate] = React.useState(new Date());
 
-
-    console.log("Details render");
-
-    console.log(date);
 
     React.useEffect(() => {
         setDate(route.params.item.date);
@@ -98,7 +95,6 @@ const Detail = ({ navigation, route }) => {
         )
     };
 
-
     const renderContent = () => {
         return (
             <View
@@ -110,56 +106,32 @@ const Detail = ({ navigation, route }) => {
                     enableReinitialize={true}
                     validationSchema={validate}
                     initialValues={{
-                        ...route.params.item
+                        ...route.params.item,
                     }}
                     onSubmit={(values) => {
-                        validate
-                            .then((valid) => {
-                                console.log(valid);
-                                if (valid) {
-                                    updateTodo(values);
-                                }
-                                else {
-                                    Alert.alert("There is an error in your form !");
-                                }
-                            })
-
+                        updateTodo(values);
                     }}
                 >
-                    {({ handleChange, touched, handleSubmit, values, setFieldValue, errors, handleBlur }) => {
-                        console.log(touched);
+                    {({ setFieldValue, values, handleSubmit }) => {
+                        console.log("render item me: ", values);
                         return (
                             <>
                                 {/* Name job */}
-                                <View
-                                    style={{
-                                        flexDirection: "row",
-                                        alignItems: "center",
-                                        marginBottom: SIZES.base
-                                    }}
+                                <FastField
+                                    name="job"
                                 >
-                                    <Text style={{ ...FONTS.h3 }}>To do :</Text>
-                                    <TextInput
-                                        value={values?.job}
-                                        style={{
-                                            borderColor: COLORS.white,
-                                            marginLeft: SIZES.base,
-                                            flex: 1,
-                                            borderWidth: 1,
-                                            borderRadius: SIZES.radius,
-                                            padding: SIZES.base * 2,
-                                            backgroundColor: COLORS.blue,
-                                            color: COLORS.white,
-                                            ...FONTS.h3
-                                        }}
-                                        onChangeText={handleChange('job')}
-                                        onBlur={handleBlur('job')}
-                                    />
-                                </View>
-                                {(errors.job && touched.job) &&
-                                    <Text style={{ ...FONTS.h3_light, color: "red" }}>{errors.job}</Text>
-                                }
+                                    {(props) => (
+                                        <InputField title="To do: " {...props} />
+                                    )}
+                                </FastField>
 
+                                <FastField
+                                    name="desc"
+                                >
+                                    {(props) => (
+                                        <InputField title="Description: " {...props} />
+                                    )}
+                                </FastField>
                                 {/* Date */}
 
                                 <View
