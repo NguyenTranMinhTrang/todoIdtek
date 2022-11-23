@@ -2,7 +2,7 @@ import React from "react";
 import { LogBox, View, Text, Alert, TextInput, TouchableOpacity, Switch, ActivityIndicator, Pressable, Keyboard } from "react-native";
 import { SIZES, COLORS, FONTS } from "../constants";
 
-const InputDetail = ({ field, meta, index, remove, push }) => {
+const InputDetail = ({ field, meta, index, remove, insert }) => {
     return (
         <View
             style={{
@@ -38,7 +38,7 @@ const InputDetail = ({ field, meta, index, remove, push }) => {
                     marginHorizontal: SIZES.base,
                     width: 55
                 }}
-                onPress={() => push('')}
+                onPress={() => insert(index + 1, '')}
             >
                 <Text style={{ ...FONTS.h3, color: COLORS.white }}>+</Text>
             </TouchableOpacity>

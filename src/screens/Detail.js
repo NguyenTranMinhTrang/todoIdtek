@@ -9,6 +9,7 @@ import InputField from "../components/InputField";
 import InputDetail from "../components/InputDetail";
 import debounce from "lodash.debounce";
 import { SelectList } from "react-native-dropdown-select-list";
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 /* redux */
 import { useSelector } from "react-redux";
 import actions from "../redux/actions";
@@ -25,8 +26,8 @@ const Detail = ({ navigation, route }) => {
     const [show, setShow] = React.useState(false);
     const [date, setDate] = React.useState(new Date());
     const formik = React.useRef();
+    const arrayHelpersRef = React.useRef(null);
     const colors = dummys.colors;
-
 
     const debouncedValidate = React.useMemo(
         () => debounce(() => formik.current?.validateForm, 500),
@@ -38,14 +39,16 @@ const Detail = ({ navigation, route }) => {
     }, []);
 
     React.useEffect(() => {
-        console.log("Call debounce");
         debouncedValidate(formik.current?.values);
     }, [formik.current?.values, debouncedValidate]);
 
 
 
+
     const validate = yup.object().shape({
-        job: yup.string().required("Name job is required !")
+        job: yup.string().required("Name job is required !"),
+        delete: yup.number().min(1, "The minimum is 1").max(formik.current?.values.todoDetails.length, "Number is invalid!")
+
     });
 
     const updateTodo = (values) => {
@@ -126,14 +129,14 @@ const Detail = ({ navigation, route }) => {
                     validationSchema={validate}
                     validateOnChange={false}
                     initialValues={{
-                        ...route.params.item
+                        ...route.params.item,
+                        delete: 1
                     }}
                     onSubmit={(values) => {
                         updateTodo(values);
                     }}
                 >
-                    {({ setFieldValue, values, handleSubmit }) => {
-                        console.log(values);
+                    {({ setFieldValue, values, handleSubmit, errors, touched }) => {
 
                         return (
                             <>
@@ -146,10 +149,60 @@ const Detail = ({ navigation, route }) => {
                                     )}
                                 </FastField>
 
-                                <Text style={{ ...FONTS.h3 }}>Todo details : </Text>
+                                {(errors.job && touched.job) &&
+                                    <Text style={{ ...FONTS.h3_light, color: "red", marginTop: SIZES.base }}>{errors.job}</Text>
+                                }
 
-                                <FieldArray name="todoDetails"
-                                    render={({ push, remove }) => {
+                                <View
+                                    style={{
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        marginTop: SIZES.padding
+                                    }}
+                                >
+                                    <FastField
+                                        name="delete"
+                                    >
+                                        {(props) => (
+                                            <InputField
+                                                style={{
+                                                    flex: 1,
+                                                }}
+                                                title="Todo details :"
+                                                {...props}
+                                            />
+                                        )}
+                                    </FastField>
+
+                                    <TouchableOpacity
+                                        style={{
+                                            borderRadius: SIZES.radius,
+                                            padding: SIZES.base * 2,
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            backgroundColor: COLORS.red,
+                                            width: 55,
+                                            marginLeft: SIZES.base
+                                        }}
+
+                                        onPress={() => {
+                                            arrayHelpersRef.current.remove(values.delete - 1);
+                                        }}
+                                    >
+                                        <Text style={{ ...FONTS.h3, color: COLORS.white }}>-</Text>
+                                    </TouchableOpacity>
+                                </View>
+
+                                {(errors.delete && touched.delete) &&
+                                    <Text style={{ ...FONTS.h3_light, color: "red", marginTop: SIZES.base }}>{errors.delete}</Text>
+                                }
+
+                                <FieldArray
+
+                                    name="todoDetails"
+                                    render={({ push, remove, insert }) => {
+
+                                        arrayHelpersRef.current = { remove };
                                         return (
                                             <View
                                                 style={{
@@ -173,7 +226,7 @@ const Detail = ({ navigation, route }) => {
                                                                                 <InputDetail
                                                                                     key={index}
                                                                                     index={index}
-                                                                                    push={push}
+                                                                                    insert={insert}
                                                                                     remove={remove}
                                                                                     {...props}
                                                                                 />
@@ -284,6 +337,7 @@ const Detail = ({ navigation, route }) => {
                                     </View>
                                 </View>
 
+                                {/* Switch */}
                                 <View
                                     style={{
                                         flexDirection: "row",
@@ -342,9 +396,13 @@ const Detail = ({ navigation, route }) => {
             style={{ flex: 1, backgroundColor: COLORS.white }}
             onPress={() => Keyboard.dismiss()}
         >
-            <DatePicker show={show} setShow={setShow} setChooseDate={setDate} check={false} />
-            {renderHeader()}
-            {renderContent()}
+            <KeyboardAwareScrollView>
+                <ScrollView >
+                    <DatePicker show={show} setShow={setShow} setChooseDate={setDate} check={false} />
+                    {renderHeader()}
+                    {renderContent()}
+                </ScrollView>
+            </KeyboardAwareScrollView>
         </Pressable>
     )
 }

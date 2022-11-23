@@ -1,17 +1,19 @@
 import React from "react";
-import { LogBox, View, Text, Alert, TextInput, TouchableOpacity, Switch, ActivityIndicator, Pressable, Keyboard } from "react-native";
+import { View, Text, TextInput } from "react-native";
 import { SIZES, COLORS, FONTS } from "../constants";
 
 
-const InputField = ({ field, meta, title }) => {
+const InputField = ({ field, title, style }) => {
+
 
     return (
-        <View>
+        <View
+            style={style}
+        >
             <View
                 style={{
                     flexDirection: "row",
                     alignItems: "center",
-                    marginBottom: SIZES.padding
                 }}
             >
                 <Text style={{ ...FONTS.h3 }}>{title}</Text>
@@ -27,14 +29,11 @@ const InputField = ({ field, meta, title }) => {
                         color: COLORS.white,
                         ...FONTS.h3
                     }}
-                    value={field.value}
+                    value={`${field.value}`}
                     onChangeText={(text) => field.onChange(field.name)(text)}
                     onBlur={field.onBlur(field.name)}
                 />
             </View>
-            {(meta.error && meta.touched) &&
-                <Text style={{ ...FONTS.h3_light, color: "red" }}>{meta.error}</Text>
-            }
         </View>
     )
 }
