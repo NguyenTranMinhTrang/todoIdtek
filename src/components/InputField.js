@@ -5,14 +5,13 @@ import { SIZES, COLORS, FONTS } from "../constants";
 
 const InputField = ({ field, meta, title }) => {
 
-    console.log('render item con');
     return (
         <View>
             <View
                 style={{
                     flexDirection: "row",
                     alignItems: "center",
-                    marginBottom: SIZES.base
+                    marginBottom: SIZES.padding
                 }}
             >
                 <Text style={{ ...FONTS.h3 }}>{title}</Text>

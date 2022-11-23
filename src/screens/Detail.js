@@ -1,11 +1,14 @@
 import React from "react";
-import { LogBox, View, Text, Alert, TextInput, TouchableOpacity, Switch, ActivityIndicator, Pressable, Keyboard } from "react-native";
-import { SIZES, COLORS, FONTS } from "../constants";
+import { LogBox, View, Text, Alert, ScrollView, TouchableOpacity, Switch, ActivityIndicator, Pressable, Keyboard } from "react-native";
+import { SIZES, COLORS, FONTS, dummys } from "../constants";
 import { AntDesign, Fontisto } from '@expo/vector-icons';
 import DatePicker from "../components/DatePicker";
 import * as yup from 'yup';
-import { Formik, Field, FastField } from "formik";
+import { Formik, FastField, FieldArray } from "formik";
 import InputField from "../components/InputField";
+import InputDetail from "../components/InputDetail";
+import debounce from "lodash.debounce";
+import { SelectList } from "react-native-dropdown-select-list";
 /* redux */
 import { useSelector } from "react-redux";
 import actions from "../redux/actions";
@@ -13,6 +16,7 @@ import { formatDate } from "../helpers";
 
 const today = new Date();
 LogBox.ignoreLogs(['Non-serializable']);
+LogBox.ignoreLogs(['Warning: Each child']);
 
 const Detail = ({ navigation, route }) => {
 
@@ -20,11 +24,25 @@ const Detail = ({ navigation, route }) => {
     const loading = useSelector((state) => state.todo.loading);
     const [show, setShow] = React.useState(false);
     const [date, setDate] = React.useState(new Date());
+    const formik = React.useRef();
+    const colors = dummys.colors;
 
+
+    const debouncedValidate = React.useMemo(
+        () => debounce(() => formik.current?.validateForm, 500),
+        [formik],
+    );
 
     React.useEffect(() => {
         setDate(route.params.item.date);
     }, []);
+
+    React.useEffect(() => {
+        console.log("Call debounce");
+        debouncedValidate(formik.current?.values);
+    }, [formik.current?.values, debouncedValidate]);
+
+
 
     const validate = yup.object().shape({
         job: yup.string().required("Name job is required !")
@@ -103,17 +121,20 @@ const Detail = ({ navigation, route }) => {
                 }}
             >
                 <Formik
+                    innerRef={formik}
                     enableReinitialize={true}
                     validationSchema={validate}
+                    validateOnChange={false}
                     initialValues={{
-                        ...route.params.item,
+                        ...route.params.item
                     }}
                     onSubmit={(values) => {
                         updateTodo(values);
                     }}
                 >
                     {({ setFieldValue, values, handleSubmit }) => {
-                        console.log("render item me: ", values);
+                        console.log(values);
+
                         return (
                             <>
                                 {/* Name job */}
@@ -125,20 +146,108 @@ const Detail = ({ navigation, route }) => {
                                     )}
                                 </FastField>
 
-                                <FastField
-                                    name="desc"
+                                <Text style={{ ...FONTS.h3 }}>Todo details : </Text>
+
+                                <FieldArray name="todoDetails"
+                                    render={({ push, remove }) => {
+                                        return (
+                                            <View
+                                                style={{
+                                                    marginVertical: SIZES.padding
+                                                }}
+                                            >
+                                                {
+                                                    values.todoDetails && values.todoDetails.length > 0 ? (
+                                                        <ScrollView
+                                                            style={{
+                                                                height: SIZES.height * 0.2
+                                                            }}
+                                                        >
+                                                            {
+                                                                values.todoDetails.map((detail, index) => {
+                                                                    return (
+                                                                        <FastField
+                                                                            name={`todoDetails.${index}`}
+                                                                        >
+                                                                            {(props) => (
+                                                                                <InputDetail
+                                                                                    key={index}
+                                                                                    index={index}
+                                                                                    push={push}
+                                                                                    remove={remove}
+                                                                                    {...props}
+                                                                                />
+                                                                            )}
+                                                                        </FastField>
+                                                                    )
+                                                                })
+                                                            }
+                                                        </ScrollView>
+                                                    ) :
+                                                        (
+                                                            <TouchableOpacity
+                                                                style={{
+                                                                    justifyContent: "center",
+                                                                    alignItems: "center",
+                                                                    backgroundColor: COLORS.blue,
+                                                                    borderRadius: SIZES.radius,
+                                                                    padding: SIZES.base * 2,
+                                                                }}
+
+                                                                onPress={() => push('')}
+                                                            >
+                                                                <Text style={{ ...FONTS.h3, color: COLORS.white }}>Add todo details</Text>
+                                                            </TouchableOpacity>
+                                                        )
+
+                                                }
+                                            </View>
+                                        )
+
+                                    }
+                                    }
+                                />
+
+                                {/* Select colors */}
+
+                                <View
+                                    style={{
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        marginBottom: SIZES.padding
+                                    }}
                                 >
-                                    {(props) => (
-                                        <InputField title="Description: " {...props} />
-                                    )}
-                                </FastField>
+                                    <Text style={{ ...FONTS.h3 }}>Color :</Text>
+                                    <SelectList
+                                        data={colors}
+                                        boxStyles={{
+                                            marginLeft: SIZES.base,
+                                            backgroundColor: COLORS[values.priority],
+                                            width: 200
+                                        }}
+                                        search={false}
+                                        placeholder={values.priority}
+                                        dropdownTextStyles={{
+                                            ...FONTS.h3_light,
+                                            color: COLORS.black
+                                        }}
+                                        inputStyles={{
+                                            ...FONTS.h3,
+                                            color: COLORS.white
+                                        }}
+                                        save="value"
+                                        setSelected={(val) => setFieldValue("priority", val)}
+                                    />
+                                </View>
+
+
                                 {/* Date */}
 
                                 <View
                                     style={{
                                         flexDirection: "row",
                                         alignItems: "center",
-                                        marginVertical: SIZES.padding
+                                        marginBottom: SIZES.padding
                                     }}
                                 >
                                     <Text style={{ ...FONTS.h3 }}>Date :</Text>

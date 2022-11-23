@@ -34,6 +34,8 @@ export const updateTodo = (newUpdateTodo) => {
             todoList[index].job = newUpdateTodo.job;
             todoList[index].date = newUpdateTodo.date;
             todoList[index].complete = newUpdateTodo.complete;
+            todoList[index].todoDetails = [...newUpdateTodo.todoDetails];
+            todoList[index].priority = newUpdateTodo.priority;
             dispatch(updateTodoSucess([...todoList]));
             resolve("Update success !");
         }, 1000);

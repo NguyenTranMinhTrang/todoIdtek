@@ -31,7 +31,8 @@ const Home = ({ navigation }) => {
     const [show, setShow] = React.useState(false);
     const [modalFilter, setModalFilter] = React.useState(false);
     const [chooseDate, setChooseDate] = React.useState(new Date());
-    const colors = ["pink", "orange", "bubble", "blue", "green"];
+
+    const colors = dummys.colors;
 
     React.useEffect(() => {
         actions.checkChangeDate(chooseDate);
