@@ -3,6 +3,8 @@ import { LogBox, View, Text, Alert, TextInput, TouchableOpacity, Switch, Activit
 import { SIZES, COLORS, FONTS } from "../constants";
 
 const InputDetail = ({ field, meta, index, remove, insert }) => {
+    console.log("Input details: ", field.name);
+    console.log("Index: ", index);
     return (
         <View
             style={{

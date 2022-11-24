@@ -13,9 +13,7 @@ import {
 } from "react-native";
 import { FONTS, images, SIZES, COLORS, dummys } from "../constants";
 import { Fontisto, Ionicons, MaterialIcons, AntDesign } from '@expo/vector-icons';
-import Animation from "../components/Animation";
-import DatePicker from "../components/DatePicker";
-import FilterModal from "../components/FilterModal";
+import { Animation, DatePicker, FilterModal } from "../components";
 /* redux */
 import actions from "../redux/actions";
 import { useSelector } from "react-redux";
